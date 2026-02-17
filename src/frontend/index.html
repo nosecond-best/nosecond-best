@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoSecond.Best — Bitcoin Naming Protocol</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--orange:#F7931A;--orange-dim:#c47615;--green:#3fb950;--red:#f85149}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--orange);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:720px;margin:0 auto;padding:2rem 1.5rem}
+header{text-align:center;margin-bottom:3rem}
+header h1{font-size:2.5rem;font-weight:800;margin-bottom:.5rem}
+header h1 span{color:var(--orange)}
+header p{color:var(--muted);font-size:1.1rem}
+
+.search-box{position:relative;margin-bottom:2rem}
+.search-box input{width:100%;padding:1rem 1.2rem;font-size:1.2rem;background:var(--surface);border:2px solid var(--border);border-radius:12px;color:var(--text);outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--orange)}
+.search-box .prefix{position:absolute;left:1.2rem;top:50%;transform:translateY(-50%);color:var(--orange);font-weight:700;font-size:1.2rem;pointer-events:none}
+.search-box input{padding-left:2.4rem}
+
+.result{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none}
+.result.show{display:block}
+.result .name{font-size:1.4rem;font-weight:700}
+.result .status{display:inline-block;padding:.25rem .75rem;border-radius:20px;font-size:.85rem;font-weight:600;margin-left:.5rem}
+.status.available{background:rgba(63,185,80,.15);color:var(--green)}
+.status.taken{background:rgba(248,81,73,.15);color:var(--red)}
+.status.reserved{background:rgba(247,147,26,.15);color:var(--orange)}
+.result .price{color:var(--muted);margin-top:.5rem;font-size:.95rem}
+
+.tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:2px solid var(--border)}
+.tab{padding:.75rem 1.5rem;cursor:pointer;color:var(--muted);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.tab:hover{color:var(--text)}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.form-group{margin-bottom:1.25rem}
+.form-group label{display:block;margin-bottom:.4rem;font-weight:600;font-size:.9rem;color:var(--muted)}
+.form-group input{width:100%;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;outline:none}
+.form-group input:focus{border-color:var(--orange)}
+
+button.primary{background:var(--orange);color:#fff;border:none;padding:.75rem 2rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s}
+button.primary:hover{background:var(--orange-dim)}
+button.primary:disabled{opacity:.5;cursor:not-allowed}
+
+.invoice-box{background:var(--surface);border:2px solid var(--orange);border-radius:12px;padding:1.5rem;margin-top:1.5rem;text-align:center;display:none}
+.invoice-box.show{display:block}
+.invoice-box .pr{word-break:break-all;font-family:monospace;font-size:.8rem;color:var(--muted);margin:1rem 0;padding:1rem;background:var(--bg);border-radius:8px;cursor:pointer}
+.invoice-box .pr:hover{color:var(--text)}
+
+.resolve-result{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-top:1.5rem;display:none}
+.resolve-result.show{display:block}
+.resolve-result dt{color:var(--orange);font-weight:600;font-size:.85rem;margin-top:.75rem}
+.resolve-result dd{font-family:monospace;font-size:.9rem;word-break:break-all}
+
+footer{text-align:center;color:var(--muted);margin-top:4rem;font-size:.85rem;padding-bottom:2rem}
+footer a{color:var(--orange)}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>₿ NoSecond<span>.Best</span></h1>
+    <p>Decentralized Bitcoin naming protocol — your identity, anchored on-chain</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="search">Search</div>
+    <div class="tab" data-tab="register">Register</div>
+    <div class="tab" data-tab="resolve">Resolve</div>
+  </div>
+
+  <!-- Search Panel -->
+  <div class="panel active" id="panel-search">
+    <div class="search-box">
+      <span class="prefix">₿</span>
+      <input type="text" id="search-input" placeholder="Search for a name..." autocomplete="off">
+    </div>
+    <div class="result" id="search-result">
+      <span class="name" id="res-name"></span>
+      <span class="status" id="res-status"></span>
+      <div class="price" id="res-price"></div>
+    </div>
+  </div>
+
+  <!-- Register Panel -->
+  <div class="panel" id="panel-register">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="reg-name" placeholder="yourname">
+    </div>
+    <div class="form-group">
+      <label>Owner Public Key (hex)</label>
+      <input type="text" id="reg-pubkey" placeholder="64-character hex pubkey">
+    </div>
+    <details style="margin-bottom:1.25rem">
+      <summary style="color:var(--muted);cursor:pointer;font-size:.9rem">Resolution fields (optional)</summary>
+      <div style="margin-top:.75rem">
+        <div class="form-group"><label>On-chain address</label><input type="text" id="reg-onchain"></div>
+        <div class="form-group"><label>Lightning address</label><input type="text" id="reg-lightning"></div>
+        <div class="form-group"><label>BOLT12 offer</label><input type="text" id="reg-bolt12"></div>
+        <div class="form-group"><label>Silent payment address</label><input type="text" id="reg-silent"></div>
+        <div class="form-group"><label>Nostr pubkey</label><input type="text" id="reg-nostr"></div>
+      </div>
+    </details>
+    <button class="primary" id="reg-submit">Register Name</button>
+    <div class="invoice-box" id="invoice-box">
+      <p style="font-weight:700;font-size:1.1rem">⚡ Pay Invoice</p>
+      <p style="color:var(--muted);margin-top:.25rem" id="invoice-amount"></p>
+      <div class="pr" id="invoice-pr" title="Click to copy"></div>
+      <button class="primary" id="invoice-confirm">Confirm Payment</button>
+      <p style="color:var(--green);margin-top:.75rem;display:none" id="reg-success"></p>
+    </div>
+  </div>
+
+  <!-- Resolve Panel -->
+  <div class="panel" id="panel-resolve">
+    <div class="search-box">
+      <span class="prefix">₿</span>
+      <input type="text" id="resolve-input" placeholder="Look up a name...">
+    </div>
+    <div class="resolve-result" id="resolve-result">
+      <dl id="resolve-dl"></dl>
+    </div>
+  </div>
+
+  <footer>
+    <p>NoSecond.Best — Bitcoin names anchored on-chain via merkle roots</p>
+    <p style="margin-top:.25rem"><a href="/api/v1/check/satoshi">API</a> · Open protocol</p>
+  </footer>
+</div>
+
+<script>
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Search
+let searchTimeout;
+const searchInput = document.getElementById('search-input');
+const searchResult = document.getElementById('search-result');
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const v = searchInput.value.trim().toLowerCase();
+  if (!v) { searchResult.classList.remove('show'); return; }
+  searchTimeout = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/v1/check/' + encodeURIComponent(v));
+      const d = await r.json();
+      document.getElementById('res-name').textContent = '₿' + d.name + '@' + d.domain;
+      const st = document.getElementById('res-status');
+      const pr = document.getElementById('res-price');
+      if (d.reserved) {
+        st.textContent = 'Reserved'; st.className = 'status reserved';
+        pr.textContent = 'Category: ' + d.reserved_category;
+      } else if (d.available) {
+        st.textContent = 'Available'; st.className = 'status available';
+        pr.textContent = d.price_sats ? d.price_sats.toLocaleString() + ' sats' : '';
+      } else {
+        st.textContent = 'Taken'; st.className = 'status taken';
+        pr.textContent = '';
+      }
+      searchResult.classList.add('show');
+    } catch(e) { console.error(e); }
+  }, 300);
+});
+
+// Register
+let currentPaymentHash = null;
+document.getElementById('reg-submit').addEventListener('click', async () => {
+  const name = document.getElementById('reg-name').value.trim();
+  const pubkey = document.getElementById('reg-pubkey').value.trim();
+  if (!name || !pubkey) return alert('Name and pubkey are required');
+  const resolution = {};
+  const fields = ['onchain','lightning','bolt12','silent','nostr'];
+  fields.forEach(f => { const v = document.getElementById('reg-' + f).value.trim(); if (v) resolution[f === 'silent' ? 'silent_payment' : f] = v; });
+
+  try {
+    const r = await fetch('/api/v1/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, owner_pubkey: pubkey, resolution: Object.keys(resolution).length ? resolution : undefined })
+    });
+    const d = await r.json();
+    if (!r.ok) return alert(d.error);
+    currentPaymentHash = d.payment_hash;
+    document.getElementById('invoice-amount').textContent = d.price_sats.toLocaleString() + ' sats';
+    document.getElementById('invoice-pr').textContent = d.payment_request;
+    document.getElementById('invoice-box').classList.add('show');
+    document.getElementById('reg-success').style.display = 'none';
+  } catch(e) { alert('Error: ' + e.message); }
+});
+
+document.getElementById('invoice-pr').addEventListener('click', function() {
+  navigator.clipboard.writeText(this.textContent).then(() => this.style.color = 'var(--green)');
+});
+
+document.getElementById('invoice-confirm').addEventListener('click', async () => {
+  if (!currentPaymentHash) return;
+  const resolution = {};
+  ['onchain','lightning','bolt12','silent','nostr'].forEach(f => {
+    const v = document.getElementById('reg-' + f).value.trim();
+    if (v) resolution[f === 'silent' ? 'silent_payment' : f] = v;
+  });
+  try {
+    const r = await fetch('/api/v1/register/confirm', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ payment_hash: currentPaymentHash, resolution: Object.keys(resolution).length ? resolution : undefined })
+    });
+    const d = await r.json();
+    if (!r.ok) return alert(d.error);
+    const s = document.getElementById('reg-success');
+    s.textContent = '✓ Registered ' + d.display;
+    s.style.display = 'block';
+  } catch(e) { alert('Error: ' + e.message); }
+});
+
+// Resolve
+let resolveTimeout;
+document.getElementById('resolve-input').addEventListener('input', () => {
+  clearTimeout(resolveTimeout);
+  const v = document.getElementById('resolve-input').value.trim().toLowerCase();
+  if (!v) { document.getElementById('resolve-result').classList.remove('show'); return; }
+  resolveTimeout = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/v1/resolve/' + encodeURIComponent(v));
+      if (!r.ok) { document.getElementById('resolve-result').classList.remove('show'); return; }
+      const d = await r.json();
+      const dl = document.getElementById('resolve-dl');
+      dl.innerHTML = '';
+      const add = (label, val) => { if (!val) return; dl.innerHTML += '<dt>' + label + '</dt><dd>' + val + '</dd>'; };
+      add('Name', '₿' + d.name + '@' + d.domain);
+      add('Owner', d.owner);
+      if (d.resolution) {
+        add('On-chain', d.resolution.onchain);
+        add('Lightning', d.resolution.lightning);
+        add('BOLT12', d.resolution.bolt12);
+        add('Silent Payment', d.resolution.silent_payment);
+        add('Nostr', d.resolution.nostr);
+        add('LNURL', d.resolution.lnurl);
+        add('Web', d.resolution.web);
+      }
+      document.getElementById('resolve-result').classList.add('show');
+    } catch(e) { console.error(e); }
+  }, 300);
+});
+</script>
+</body>
+</html>
