@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>NoSecond.Best Protocol Specification v0.1</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+  html{background:#0a0e14;color:#e2e8f0}
+  body{max-width:800px;margin:0 auto;padding:2rem 1.5rem;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7}
+  a{color:#F7931A}
+  h1,h2,h3,h4{color:#e2e8f0;margin-top:2rem}
+  h1{color:#F7931A;font-size:2rem;border-bottom:2px solid #252d3a;padding-bottom:.75rem}
+  h2{font-size:1.4rem;border-bottom:1px solid #252d3a;padding-bottom:.5rem}
+  h3{font-size:1.15rem}
+  table{border-collapse:collapse;width:100%;margin:1rem 0}
+  th,td{border:1px solid #252d3a;padding:.5rem .75rem;text-align:left;font-size:.9rem}
+  th{background:#1a2230;color:#F7931A;font-weight:600}
+  tr:nth-child(even){background:#111820}
+  code{background:#1a2230;padding:.15em .4em;border-radius:4px;font-size:.88em;color:#e2e8f0}
+  pre{background:#111820;border:1px solid #252d3a;border-radius:8px;padding:1rem;overflow-x:auto;font-size:.85rem}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #F7931A;padding-left:1rem;color:#7b8ba3}
+  hr{border:none;border-top:1px solid #252d3a;margin:2rem 0}
+  .back{display:inline-block;margin-bottom:2rem;color:#F7931A;font-weight:600}
+  </style>
+</head>
+<body>
+<a class="back" href="/">← Back to NoSecond.Best</a>
+<header id="title-block-header">
+<h1 class="title">NoSecond.Best Protocol Specification v0.1</h1>
+</header>
+<h1 id="nosecond.best-protocol-specification-v0.1">NoSecond.Best
+Protocol Specification v0.1</h1>
+<p><strong>DRAFT — 2026-02-17</strong> <strong>Author:</strong>
+SatoshiSan</p>
+<hr />
+<h2 id="overview">1. Overview</h2>
+<p>NoSecond.Best (NSB) is a decentralized naming protocol anchored on
+the Bitcoin timechain, providing human-readable payment addresses that
+work today via DNS and evolve toward full decentralization.</p>
+<h3 id="vision">Vision</h3>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 20%" />
+<col style="width: 28%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Format</th>
+<th>Resolution</th>
+<th>Trust Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 — Gateway</td>
+<td><code>₿alice@nosecond.best</code></td>
+<td>DNS (BIP-353) + HTTPS gateway</td>
+<td>Centralized (our server)</td>
+</tr>
+<tr>
+<td>2 — Federated</td>
+<td><code>₿alice@anydomain.com</code></td>
+<td>Any domain runs a resolver</td>
+<td>Federated (domain operators)</td>
+</tr>
+<tr>
+<td>3 — Sovereign</td>
+<td><code>₿alice</code> (no domain)</td>
+<td>On-chain + Nostr relays</td>
+<td>Trustless (Bitcoin + cryptography)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="prior-art-positioning">2. Prior Art &amp; Positioning</h2>
+<h3 id="bip-353-dns-payment-instructions">BIP-353 (DNS Payment
+Instructions)</h3>
+<ul>
+<li><strong>Status:</strong> Complete (2024)</li>
+<li><strong>Format:</strong> <code>₿user@domain</code> (display),
+resolved via DNS TXT records at
+<code>user.user._bitcoin-payment.domain</code></li>
+<li><strong>Requires:</strong> DNSSEC, domain ownership</li>
+<li><strong>Key detail:</strong> BIP-353 already defines ₿ as the
+display prefix for human-readable Bitcoin payment names</li>
+</ul>
+<h3 id="what-bip-353-doesnt-do">What BIP-353 doesn’t do:</h3>
+<ul>
+<li>No decentralized name ownership — names are controlled by whoever
+controls the domain’s DNS</li>
+<li>No on-chain registration — no proof of ownership on Bitcoin</li>
+<li>No marketplace for names — no buying/selling/transferring names</li>
+<li>No path to domain-free resolution</li>
+</ul>
+<h3 id="nsbs-value-add">NSB’s value add:</h3>
+<p>NSB <strong>builds on</strong> BIP-353 for Phase 1 compatibility,
+then <strong>extends beyond it</strong> by anchoring name ownership
+on-chain and enabling decentralized resolution.</p>
+<hr />
+<h2 id="architecture">3. Architecture</h2>
+<h3 id="name-format">3.1 Name Format</h3>
+<pre><code>₿&lt;name&gt;@&lt;domain&gt;       # Phase 1 &amp; 2 (BIP-353 compatible)
+₿&lt;name&gt;                 # Phase 3 (domain-free, on-chain only)</code></pre>
+<p><strong>Name rules:</strong> - Lowercase alphanumeric + hyphens +
+underscores - 1-64 characters - No leading/trailing hyphens - Reserved
+names (see §7) controlled by NSB initially</p>
+<h3 id="ownership-model">3.2 Ownership Model</h3>
+<p>Every name is bound to a <strong>secp256k1 keypair</strong>
+(compatible with both Bitcoin and Nostr).</p>
+<ul>
+<li>The <strong>public key</strong> is the owner identity</li>
+<li>The <strong>private key</strong> is used to sign registration,
+updates, and transfers</li>
+<li>Users can use their existing Nostr key (npub/nsec) — no new key
+infrastructure needed</li>
+</ul>
+<h3 id="registration-on-chain-anchoring">3.3 Registration (On-Chain
+Anchoring)</h3>
+<h4 id="what-goes-on-chain">What goes on-chain</h4>
+<p>Name registrations are batched and anchored to Bitcoin L1 using an
+<strong>OP_RETURN merkle commitment</strong>:</p>
+<pre><code>OP_RETURN &lt;NSB_PROTOCOL_TAG&gt; &lt;merkle_root&gt; &lt;block_height&gt; &lt;batch_number&gt;</code></pre>
+<p>Where: - <code>NSB_PROTOCOL_TAG</code> = <code>0x4e534200</code>
+(“NSB\0”) - <code>merkle_root</code> = root of a merkle tree containing
+all registrations in this batch - <code>block_height</code> = reference
+block height - <code>batch_number</code> = sequential batch counter</p>
+<h4 id="whats-in-the-merkle-tree">What’s in the merkle tree</h4>
+<p>Each leaf is the SHA256 hash of a registration record:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;alice&quot;</span><span class="fu">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;domain&quot;</span><span class="fu">:</span> <span class="st">&quot;nosecond.best&quot;</span><span class="fu">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;owner_pubkey&quot;</span><span class="fu">:</span> <span class="st">&quot;02abc123...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;registered_at&quot;</span><span class="fu">:</span> <span class="dv">880000</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;expires_at&quot;</span><span class="fu">:</span> <span class="dv">932000</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;nonce&quot;</span><span class="fu">:</span> <span class="st">&quot;random_bytes_hex&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="batch-frequency">Batch frequency</h4>
+<ul>
+<li>Registrations are batched every ~6 blocks (~1 hour)</li>
+<li>During low-activity periods, batches may be less frequent</li>
+<li>Each registration gets a <strong>merkle proof</strong> that can be
+verified against the on-chain root</li>
+</ul>
+<h4 id="cost-structure">Cost structure</h4>
+<ul>
+<li>One on-chain transaction per batch, regardless of number of
+registrations</li>
+<li>At ~250 bytes per tx, cost is shared across all registrations in the
+batch</li>
+<li>Individual registration cost: Lightning payment to NSB service</li>
+</ul>
+<h3 id="resolution-how-names-resolve-to-addresses">3.4 Resolution (How
+Names Resolve to Addresses)</h3>
+<p>Resolution data is <strong>NOT</strong> stored on-chain (it changes
+too often). Instead, it lives on <strong>Nostr relays</strong> and is
+served by the <strong>NSB gateway</strong>.</p>
+<h4 id="layer-1-nostr-events-source-of-truth">Layer 1: Nostr Events
+(Source of Truth)</h4>
+<p>Name owners publish resolution data as signed Nostr events:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="dv">38383</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tags&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;d&quot;</span><span class="ot">,</span> <span class="st">&quot;alice@nosecond.best&quot;</span><span class="ot">],</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;onchain&quot;</span><span class="ot">,</span> <span class="st">&quot;bc1qxyz...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;lightning&quot;</span><span class="ot">,</span> <span class="st">&quot;lno1qgsq...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;lnurl&quot;</span><span class="ot">,</span> <span class="st">&quot;lnurl1dp68gurn8ghj7...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;bolt12&quot;</span><span class="ot">,</span> <span class="st">&quot;lno1...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;nostr&quot;</span><span class="ot">,</span> <span class="st">&quot;npub1abc...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;silent&quot;</span><span class="ot">,</span> <span class="st">&quot;sp1q...&quot;</span><span class="ot">],</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="ot">[</span><span class="st">&quot;updated&quot;</span><span class="ot">,</span> <span class="st">&quot;1708200000&quot;</span><span class="ot">]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;content&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;pubkey&quot;</span><span class="fu">:</span> <span class="st">&quot;&lt;owner_pubkey_hex&gt;&quot;</span><span class="fu">,</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;created_at&quot;</span><span class="fu">:</span> <span class="dv">1708200000</span><span class="fu">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sig&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Event kind 38383</strong> (parameterized replaceable event):
+- <code>d</code> tag = name identifier (ensures only one active record
+per name) - Payment method tags = what this name resolves to - Signed by
+the owner key = verifiable by anyone - Replaceable = owner publishes new
+event to update</p>
+<p><strong>Supported resolution targets:</strong> | Tag | Description |
+|—–|————-| | <code>onchain</code> | On-chain Bitcoin address (bc1…) | |
+<code>lightning</code> | Lightning node pubkey or connection string | |
+<code>lnurl</code> | LNURL pay endpoint | | <code>bolt12</code> | BOLT12
+offer | | <code>silent</code> | BIP-352 silent payment address | |
+<code>nostr</code> | Nostr public key | | <code>web</code> | Website URL
+|</p>
+<h4 id="layer-2-nsb-gateway-bip-353-bridge">Layer 2: NSB Gateway
+(BIP-353 Bridge)</h4>
+<p>The nosecond.best gateway reads Nostr events and serves them via
+standard protocols:</p>
+<p><strong>DNS (BIP-353 compatible):</strong></p>
+<pre><code>alice.user._bitcoin-payment.nosecond.best. IN TXT &quot;bitcoin:bc1qxyz...?lno=lno1...&quot;</code></pre>
+<p><strong>HTTPS (Lightning Address / LNURL compatible):</strong></p>
+<pre><code>GET https://nosecond.best/.well-known/lnurlp/alice
+→ { &quot;callback&quot;: &quot;...&quot;, &quot;tag&quot;: &quot;payRequest&quot;, ... }</code></pre>
+<p><strong>API (for apps):</strong></p>
+<pre><code>GET https://nosecond.best/api/v1/resolve/alice
+→ {
+    &quot;name&quot;: &quot;alice&quot;,
+    &quot;owner&quot;: &quot;02abc123...&quot;,
+    &quot;onchain&quot;: &quot;bc1qxyz...&quot;,
+    &quot;lightning&quot;: &quot;...&quot;,
+    &quot;verified&quot;: true,
+    &quot;merkle_proof&quot;: &quot;...&quot;,
+    &quot;anchor_txid&quot;: &quot;abc123...&quot;
+  }</code></pre>
+<h4 id="layer-3-direct-nostr-resolution-no-gateway">Layer 3: Direct
+Nostr Resolution (No Gateway)</h4>
+<p>Any wallet can resolve names without the gateway:</p>
+<ol type="1">
+<li>Query Nostr relays for kind <code>38383</code> events with
+<code>d</code> tag matching <code>alice@nosecond.best</code></li>
+<li>Get the owner pubkey from the event</li>
+<li>Verify the owner pubkey matches the on-chain registration (using the
+merkle proof from any NSB indexer or the API)</li>
+<li>Use the resolution data</li>
+</ol>
+<pre><code>Wallet → Nostr Relay: REQ [&quot;REQ&quot;, &quot;sub1&quot;, {&quot;kinds&quot;: [38383], &quot;#d&quot;: [&quot;alice@nosecond.best&quot;]}]
+Relay → Wallet: EVENT {...}
+Wallet: verify event.pubkey == registered owner for &quot;alice&quot;
+Wallet: extract payment info from tags</code></pre>
+<h3 id="verification-chain">3.5 Verification Chain</h3>
+<p>Full verification that <code>₿alice@nosecond.best</code> is
+legitimate:</p>
+<pre><code>1. Find on-chain anchor tx with NSB_PROTOCOL_TAG
+2. Extract merkle_root from OP_RETURN
+3. Verify alice&#39;s registration record against merkle_root (using merkle proof)
+4. Extract owner_pubkey from registration record
+5. Find latest kind:38383 Nostr event for &quot;alice@nosecond.best&quot;
+6. Verify event is signed by owner_pubkey
+7. Extract payment addresses from event tags
+8. ✅ Verified: these addresses belong to the registered owner of &quot;alice&quot;</code></pre>
+<hr />
+<h2 id="registration-flow-user-journey">4. Registration Flow (User
+Journey)</h2>
+<h3 id="new-registration">4.1 New Registration</h3>
+<pre><code>User                        NSB Service                   Bitcoin L1
+  |                              |                            |
+  |-- 1. Check availability ----&gt;|                            |
+  |&lt;--- &quot;alice&quot; is available ----|                            |
+  |                              |                            |
+  |-- 2. Submit registration ---&gt;|                            |
+  |   (name + owner pubkey)      |                            |
+  |                              |                            |
+  |&lt;-- 3. Lightning invoice -----|                            |
+  |                              |                            |
+  |-- 4. Pay invoice -----------&gt;|                            |
+  |                              |                            |
+  |&lt;-- 5. Confirmation + --------|                            |
+  |       merkle proof (pending) |                            |
+  |                              |-- 6. Batch anchor tx -----&gt;|
+  |                              |    (OP_RETURN merkle root) |
+  |                              |                            |
+  |&lt;-- 7. Final confirmation ----|                            |
+  |       (with txid + proof)    |                            |
+  |                              |                            |
+  |-- 8. Publish Nostr event ---&gt;| (relays)                   |
+  |   (resolution data)         |                            |
+  |                              |                            |
+  ✅ ₿alice@nosecond.best is live                             |</code></pre>
+<h3 id="update-resolution-data">4.2 Update Resolution Data</h3>
+<pre><code>User                         Nostr Relays              NSB Gateway
+  |                              |                         |
+  |-- Publish new kind:38383 ---&gt;|                         |
+  |   (signed by owner key)      |                         |
+  |                              |--- event propagation --&gt;|
+  |                              |                         |-- update DNS/API
+  |                              |                         |
+  ✅ Resolution updated (no on-chain tx needed)</code></pre>
+<h3 id="transfer-ownership">4.3 Transfer Ownership</h3>
+<pre><code>Current Owner                NSB Service                Bitcoin L1
+  |                              |                         |
+  |-- Request transfer ---------&gt;|                         |
+  |   (name, new_owner_pubkey,   |                         |
+  |    signed by current owner)  |                         |
+  |                              |                         |
+  |&lt;-- Lightning invoice --------|                         |
+  |                              |                         |
+  |-- Pay ----------------------&gt;|                         |
+  |                              |-- Batch anchor --------&gt;|
+  |                              |   (transfer record      |
+  |                              |    in merkle tree)       |
+  |                              |                         |
+  ✅ New owner publishes their Nostr resolution event</code></pre>
+<hr />
+<h2 id="phase-2-any-domain">5. Phase 2: Any Domain</h2>
+<h3 id="how-third-party-domains-join-the-protocol">How third-party
+domains join the protocol</h3>
+<p>A domain owner (e.g., <code>bitcoin.org</code>) can offer
+<code>₿name@bitcoin.org</code> by:</p>
+<ol type="1">
+<li><p><strong>Register domain on-chain</strong> — Prove domain
+ownership via a DNS TXT record + on-chain anchor</p>
+<pre><code>_nsb-verify.bitcoin.org IN TXT &quot;nsb:verify:&lt;owner_pubkey&gt;&quot;</code></pre>
+<p>Then anchor this claim on Bitcoin (batched with other
+operations)</p></li>
+<li><p><strong>Run an NSB resolver</strong> — Open-source software
+that:</p>
+<ul>
+<li>Accepts name registrations for their domain</li>
+<li>Publishes batch anchors to Bitcoin</li>
+<li>Serves BIP-353 DNS records</li>
+<li>Watches Nostr relays for resolution updates</li>
+</ul></li>
+<li><p><strong>Or delegate to nosecond.best</strong> — We host the
+resolver for them (SaaS model)</p></li>
+</ol>
+<h3 id="federation-model">Federation model</h3>
+<ul>
+<li>Each domain is autonomous — they control their own names</li>
+<li>All registrations anchor to the same Bitcoin timechain</li>
+<li>Cross-domain verification works the same way (merkle proofs)</li>
+<li>Nostr events include the full <code>name@domain</code>
+identifier</li>
+</ul>
+<hr />
+<h2 id="phase-3-domain-free-names">6. Phase 3: Domain-Free Names</h2>
+<h3 id="alice-no-sign"><code>₿alice</code> (no @ sign)</h3>
+<p>When the protocol has enough adoption: - Names registered without a
+domain resolve against a <strong>global on-chain registry</strong> - No
+single entity controls the namespace - Resolution still via Nostr
+events, but the <code>d</code> tag is just <code>alice</code> (no
+domain) - First-come-first-served, anchored on Bitcoin</p>
+<h3 id="challenges">Challenges</h3>
+<ul>
+<li><strong>Squatting</strong> — mitigated by pricing (auction model for
+short/premium names)</li>
+<li><strong>Disputes</strong> — no central authority; code is law</li>
+<li><strong>Transition</strong> — <code>₿alice@nosecond.best</code> →
+<code>₿alice</code> migration path needed</li>
+</ul>
+<hr />
+<h2 id="reserved-names-pricing">7. Reserved Names &amp; Pricing</h2>
+<h3 id="phase-1-pricing-nosecond.best">Phase 1 Pricing
+(nosecond.best)</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Examples</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultra-premium (1-3 chars)</td>
+<td>₿btc, ₿pay, ₿sat</td>
+<td>Auction / offers</td>
+</tr>
+<tr>
+<td>Premium (common words)</td>
+<td>₿alice, ₿wallet, ₿shop</td>
+<td>100,000+ sats</td>
+</tr>
+<tr>
+<td>Standard (4+ chars)</td>
+<td>₿satoshisan, ₿mystore</td>
+<td>10,000 sats</td>
+</tr>
+<tr>
+<td>Long (10+ chars)</td>
+<td>₿mylongusername</td>
+<td>1,000 sats</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reserved-names-controlled-by-nsb">Reserved names (controlled by
+NSB)</h3>
+<p>Top 1000 common first names, top 500 common words, brand names
+(released on verified request), Bitcoin-related terms (btc, bitcoin,
+satoshi, lightning, etc.)</p>
+<h3 id="renewal">Renewal</h3>
+<ul>
+<li>Names registered for 52,560 blocks (~1 year)</li>
+<li>Renewal at same rate</li>
+<li>Grace period: 4,320 blocks (~30 days) after expiry</li>
+<li>Expired names return to available pool</li>
+</ul>
+<hr />
+<h2 id="revenue-model">8. Revenue Model</h2>
+<table>
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr>
+<th>Stream</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name registration fees</td>
+<td>Primary revenue — Lightning payments for registration</td>
+</tr>
+<tr>
+<td>Premium name sales</td>
+<td>Auction/fixed price for desirable names</td>
+</tr>
+<tr>
+<td>Renewal fees</td>
+<td>Recurring revenue from yearly renewals</td>
+</tr>
+<tr>
+<td>Domain hosting (Phase 2)</td>
+<td>SaaS for third-party domains</td>
+</tr>
+<tr>
+<td>API access</td>
+<td>Free tier + paid for high-volume commercial use</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="security-considerations">9. Security Considerations</h2>
+<h3 id="threat-name-hijacking">Threat: Name hijacking</h3>
+<ul>
+<li><strong>Mitigation:</strong> Ownership = cryptographic key. Only the
+key holder can update resolution or transfer.</li>
+</ul>
+<h3 id="threat-dns-spoofing-gateway">Threat: DNS spoofing (gateway)</h3>
+<ul>
+<li><strong>Mitigation:</strong> DNSSEC on nosecond.best. Wallets that
+verify on-chain anchors don’t trust DNS at all.</li>
+</ul>
+<h3 id="threat-merkle-proof-forgery">Threat: Merkle proof forgery</h3>
+<ul>
+<li><strong>Mitigation:</strong> Proofs are verified against on-chain
+OP_RETURN data. Forging requires rewriting Bitcoin blocks.</li>
+</ul>
+<h3 id="threat-nostr-relay-censorship">Threat: Nostr relay
+censorship</h3>
+<ul>
+<li><strong>Mitigation:</strong> Events are published to multiple
+relays. Any relay can serve them. Users can self-host.</li>
+</ul>
+<h3 id="threat-nsb-service-goes-down">Threat: NSB service goes down</h3>
+<ul>
+<li><strong>Mitigation:</strong> On-chain registrations persist forever.
+Nostr events are on relays. Any indexer can reconstruct the registry.
+Only the BIP-353 gateway needs the service.</li>
+</ul>
+<h3 id="threat-key-loss">Threat: Key loss</h3>
+<ul>
+<li><strong>Mitigation:</strong> Standard key backup practices. Future:
+social recovery via multisig or threshold signatures.</li>
+</ul>
+<hr />
+<h2 id="technical-stack-proposed">10. Technical Stack (Proposed)</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway server</td>
+<td>Rust or TypeScript</td>
+</tr>
+<tr>
+<td>Bitcoin interaction</td>
+<td>Bitcoin Core RPC / Electrum</td>
+</tr>
+<tr>
+<td>Lightning payments</td>
+<td>LND / CLN / LDK</td>
+</tr>
+<tr>
+<td>Nostr integration</td>
+<td>nostr-tools / custom relay client</td>
+</tr>
+<tr>
+<td>DNS serving</td>
+<td>PowerDNS or custom authoritative server</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL (indexer state)</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Web app for registration + management</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="open-questions">11. Open Questions</h2>
+<ol type="1">
+<li><strong>Nostr event kind:</strong> 38383 is placeholder — should we
+request an official NIP for this?</li>
+<li><strong>Batch economics:</strong> What’s the optimal batch interval
+vs. user experience tradeoff?</li>
+<li><strong>Light client verification:</strong> How do mobile wallets
+verify merkle proofs without running a full node?</li>
+<li><strong>Name disputes:</strong> Is pure first-come-first-served
+sufficient, or do we need a dispute mechanism?</li>
+<li><strong>BIP-353 compatibility:</strong> Should Phase 1 be pure
+BIP-353 (just DNS) before adding the on-chain layer?</li>
+<li><strong>Silent payments integration:</strong> How do BIP-352 silent
+payment addresses interact with this system?</li>
+</ol>
+<hr />
+<h2 id="roadmap">12. Roadmap</h2>
+<h3 id="phase-1-mvp-nosecond.best-gateway">Phase 1 — MVP (nosecond.best
+gateway)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Domain setup + DNSSEC</label></li>
+<li><label><input type="checkbox" />BIP-353 compatible DNS
+resolution</label></li>
+<li><label><input type="checkbox" />Web registration
+interface</label></li>
+<li><label><input type="checkbox" />Lightning payment
+integration</label></li>
+<li><label><input type="checkbox" />On-chain batch
+anchoring</label></li>
+<li><label><input type="checkbox" />Nostr event publishing</label></li>
+<li><label><input type="checkbox" />Reserved name list</label></li>
+<li><label><input type="checkbox" />API v1</label></li>
+</ul>
+<h3 id="phase-2-federation">Phase 2 — Federation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open-source resolver
+software</label></li>
+<li><label><input type="checkbox" />Domain verification
+protocol</label></li>
+<li><label><input type="checkbox" />Third-party domain
+onboarding</label></li>
+<li><label><input type="checkbox" />Cross-domain resolution</label></li>
+</ul>
+<h3 id="phase-3-sovereignty">Phase 3 — Sovereignty</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Domain-free name
+protocol</label></li>
+<li><label><input type="checkbox" />Decentralized indexer
+network</label></li>
+<li><label><input type="checkbox" />Wallet integration SDK</label></li>
+<li><label><input type="checkbox" />NIP proposal for Nostr name
+events</label></li>
+</ul>
+<hr />
+<p><em>This is a living document. Version 0.1 — expect significant
+changes as the protocol is refined.</em></p>
+</body>
+</html>

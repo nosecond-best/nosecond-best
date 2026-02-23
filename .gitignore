@@ -1,4 +1,7 @@
 node_modules/
-dist/
 data/
 *.db
+*.db-wal
+*.db-shm
+PROTOCOL-SPEC-v0.1.html
+core.*

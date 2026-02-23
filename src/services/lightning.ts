@@ -60,15 +60,38 @@ export class LndProvider implements LightningProvider {
   }
 
   private async request(path: string, opts: RequestInit = {}): Promise<any> {
-    const res = await fetch(`${this.baseUrl}${path}`, {
-      ...opts,
-      headers: {
-        'Grpc-Metadata-macaroon': this.macaroon,
-        'Content-Type': 'application/json',
-        ...opts.headers,
-      },
+    // Use Node https module directly — Umbrel uses self-signed TLS certs
+    const https = await import('node:https');
+    const url = new URL(`${this.baseUrl}${path}`);
+    const body = opts.body as string | undefined;
+
+    return new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: url.hostname,
+        port: url.port,
+        path: url.pathname + url.search,
+        method: opts.method || 'GET',
+        headers: {
+          'Grpc-Metadata-macaroon': this.macaroon,
+          'Content-Type': 'application/json',
+        },
+        rejectAuthorized: false,
+        // ⚠️ TEST ONLY — pin cert in production
+      } as any, (res) => {
+        let data = '';
+        res.on('data', (chunk: Buffer) => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch {
+            reject(new Error(`LND API error ${res.statusCode}: ${data}`));
+          }
+        });
+      });
+      req.on('error', reject);
+      if (body) req.write(body);
+      req.end();
     });
-    return res.json();
   }
 
   async createInvoice(amountSats: number, memo: string): Promise<LightningInvoice> {

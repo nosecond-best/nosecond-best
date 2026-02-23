@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoSecond.Best — Decentralized Bitcoin Naming Protocol</title>
+<meta name="description" content="Human-readable Bitcoin payment addresses anchored on-chain. Your identity, your keys, your name.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e14;--surface:#111820;--surface2:#1a2230;--border:#252d3a;--text:#e2e8f0;--muted:#7b8ba3;--orange:#F7931A;--orange-dim:#d4800f;--orange-glow:rgba(247,147,26,.12);--green:#3fb950}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:#ffa940;text-decoration:underline}
+code{font-family:'SF Mono',Consolas,monospace;background:var(--surface2);padding:.15em .4em;border-radius:4px;font-size:.9em}
+
+.wrap{max-width:800px;margin:0 auto;padding:0 1.5rem}
+
+/* Hero */
+.hero{text-align:center;padding:5rem 0 3rem}
+.hero .logo{font-size:3.5rem;font-weight:900;letter-spacing:-.02em;margin-bottom:.75rem}
+.hero .logo span{color:var(--orange)}
+.hero .tagline{font-size:1.3rem;color:var(--muted);max-width:540px;margin:0 auto 2rem}
+.hero .cta{display:inline-flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.hero .cta a{display:inline-block;padding:.75rem 1.75rem;border-radius:8px;font-weight:700;font-size:1rem;transition:all .2s}
+.btn-primary{background:var(--orange);color:#fff !important}
+.btn-primary:hover{background:var(--orange-dim);text-decoration:none !important}
+.btn-secondary{background:var(--surface2);color:var(--text) !important;border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--orange);text-decoration:none !important}
+
+/* Sections */
+section{padding:3rem 0}
+section h2{font-size:1.8rem;font-weight:800;margin-bottom:1.5rem}
+section h2 span{color:var(--orange)}
+
+/* What */
+.what p{font-size:1.1rem;color:var(--muted);margin-bottom:1rem}
+.what .example{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;margin:2rem 0;font-size:1.6rem;font-weight:700;letter-spacing:.01em}
+.what .example .arrow{color:var(--muted);font-size:1rem;display:block;margin:.75rem 0;font-weight:400}
+.what .example .addr{color:var(--muted);font-size:.95rem;font-weight:400;font-family:monospace;word-break:break-all}
+
+/* Phases */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:1.5rem}
+.phase{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
+.phase .num{color:var(--orange);font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.phase h3{font-size:1.1rem;margin-bottom:.5rem}
+.phase p{color:var(--muted);font-size:.9rem}
+.phase.active{border-color:var(--orange);background:var(--orange-glow)}
+
+/* How it works */
+.steps{counter-reset:step;margin-top:1.5rem}
+.step{display:flex;gap:1.25rem;margin-bottom:1.5rem;align-items:flex-start}
+.step::before{counter-increment:step;content:counter(step);flex-shrink:0;width:2.5rem;height:2.5rem;background:var(--surface2);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--orange);font-size:1rem}
+.step div h3{font-size:1rem;margin-bottom:.25rem}
+.step div p{color:var(--muted);font-size:.95rem}
+
+/* Tech */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
+.tech-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.tech-item h4{font-size:.95rem;color:var(--orange);margin-bottom:.25rem}
+.tech-item p{color:var(--muted);font-size:.88rem}
+
+/* Links / Resources */
+.resources{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1.5rem}
+.resource{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color .2s}
+.resource:hover{border-color:var(--orange);text-decoration:none !important}
+.resource h3{font-size:1rem;margin-bottom:.35rem}
+.resource p{color:var(--muted);font-size:.88rem}
+.resource .arrow-link{color:var(--orange);font-size:.9rem;margin-top:.75rem;display:inline-block}
+
+/* Status */
+.status-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.75rem;display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin:2rem 0;font-size:.95rem}
+.status-bar .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:.5rem;position:relative;top:1px}
+.dot.green{background:var(--green)}
+.dot.orange{background:var(--orange)}
+
+/* Footer */
+footer{text-align:center;color:var(--muted);padding:3rem 0 2rem;font-size:.85rem;border-top:1px solid var(--border);margin-top:2rem}
+footer .links{margin-top:.5rem}
+footer .links a{margin:0 .75rem}
+
+@media(max-width:600px){
+  .hero .logo{font-size:2.5rem}
+  .hero .tagline{font-size:1.1rem}
+  .status-bar{flex-direction:column;gap:.75rem;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="logo">₿ NoSecond<span>.Best</span></div>
+    <p class="tagline">Human-readable Bitcoin payment addresses, anchored on-chain. Your identity, your keys, your name.</p>
+    <div class="cta">
+      <a href="/protocol" class="btn-primary">Read the Protocol Spec</a>
+      <a href="https://github.com/nicbuitr/nosecond-best" class="btn-secondary">GitHub →</a>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar">
+    <span><span class="dot orange"></span> Phase 1 — Building MVP</span>
+    <span><span class="dot green"></span> Domain live</span>
+    <span><span class="dot green"></span> SSL active</span>
+  </div>
+
+  <!-- What is this -->
+  <section class="what">
+    <h2>What is <span>NoSecond.Best</span>?</h2>
+    <p>Sending Bitcoin today means copying long, unreadable addresses. One wrong character and your funds are gone — <em>no second chance</em>.</p>
+    <p>NoSecond.Best is a decentralized naming protocol that gives you a short, human-readable payment address — built on top of <a href="https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki">BIP-353</a>, anchored on the Bitcoin timechain, and resolved via Nostr relays.</p>
+
+    <div class="example">
+      ₿satoshi<span style="color:var(--orange)">@nosecond.best</span>
+      <span class="arrow">resolves to ↓</span>
+      <span class="addr">bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq</span>
+    </div>
+
+    <p>Names are owned by cryptographic keys — not by us, not by any company. You register a name, you control it. Period.</p>
+  </section>
+
+  <!-- Phases -->
+  <section>
+    <h2>The <span>Roadmap</span></h2>
+    <p style="color:var(--muted)">Three phases from centralized convenience to full decentralization.</p>
+    <div class="phases">
+      <div class="phase active">
+        <div class="num">Phase 1 — Gateway</div>
+        <h3>₿name@nosecond.best</h3>
+        <p>Centralized DNS gateway. BIP-353 compatible. Works with existing wallets today. Pay with Lightning to register.</p>
+      </div>
+      <div class="phase">
+        <div class="num">Phase 2 — Federated</div>
+        <h3>₿name@anydomain.com</h3>
+        <p>Any domain can run an NSB resolver. Open-source software. Shared on-chain anchoring.</p>
+      </div>
+      <div class="phase">
+        <div class="num">Phase 3 — Sovereign</div>
+        <h3>₿name</h3>
+        <p>No domain needed. Fully decentralized resolution via on-chain registry + Nostr. Code is law.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section>
+    <h2>How it <span>Works</span></h2>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h3>Pick a name</h3>
+          <p>Choose your human-readable Bitcoin identity. Names are 1–64 characters, lowercase alphanumeric.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Pay with Lightning</h3>
+          <p>Registration costs sats — paid instantly via Lightning. Prices scale by name length and demand.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Anchored on Bitcoin</h3>
+          <p>Registrations are batched into a merkle tree and committed to Bitcoin L1 via OP_RETURN. Proof of ownership lives on the timechain forever.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Resolved via Nostr</h3>
+          <p>Your payment addresses are published as signed Nostr events. Update them anytime — no on-chain transaction needed. Anyone can verify the signature matches the on-chain owner.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>BIP-353 compatible</h3>
+          <p>The gateway serves standard DNS TXT records and LNURL endpoints. Wallets that support BIP-353 work out of the box — no integration needed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech stack -->
+  <section>
+    <h2>Built <span>With</span></h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <h4>Bitcoin L1</h4>
+        <p>OP_RETURN merkle commitments for immutable proof of name ownership</p>
+      </div>
+      <div class="tech-item">
+        <h4>Lightning Network</h4>
+        <p>Instant registration payments via LND</p>
+      </div>
+      <div class="tech-item">
+        <h4>Nostr Protocol</h4>
+        <p>Signed events for decentralized name resolution (kind 38383)</p>
+      </div>
+      <div class="tech-item">
+        <h4>BIP-353</h4>
+        <p>DNS-based human-readable payment instructions — full compatibility</p>
+      </div>
+      <div class="tech-item">
+        <h4>DNSSEC</h4>
+        <p>Cryptographically signed DNS for gateway security</p>
+      </div>
+      <div class="tech-item">
+        <h4>secp256k1</h4>
+        <p>Same keypairs for Bitcoin, Nostr, and name ownership — one key to rule them all</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section>
+    <h2><span>Resources</span></h2>
+    <div class="resources">
+      <a href="/protocol" class="resource">
+        <h3>📄 Protocol Specification v0.1</h3>
+        <p>The full technical spec — architecture, registration flow, verification chain, security model, and roadmap.</p>
+        <span class="arrow-link">Read the spec →</span>
+      </a>
+      <a href="https://github.com/nicbuitr/nosecond-best" class="resource">
+        <h3>💻 Source Code</h3>
+        <p>Open-source gateway server, DNS resolver, registration API, and web frontend.</p>
+        <span class="arrow-link">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki" class="resource">
+        <h3>📋 BIP-353</h3>
+        <p>DNS Payment Instructions — the standard we build on top of for human-readable Bitcoin addresses.</p>
+        <span class="arrow-link">Read BIP-353 →</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>NoSecond.Best</strong> — Because there's no second best when it comes to your Bitcoin identity.</p>
+    <div class="links">
+      <a href="/protocol">Protocol</a>
+      <a href="https://github.com/nicbuitr/nosecond-best">GitHub</a>
+    </div>
+    <p style="margin-top:1rem;font-size:.8rem;color:var(--border)">₿ Built on Bitcoin. Resolved on Nostr. Owned by you.</p>
+  </footer>
+
+</div>
+</body>
+</html>
